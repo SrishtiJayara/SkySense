@@ -3,7 +3,7 @@
 SkySense is a real-time weather forecast web application that provides accurate weather updates using location-based services and weather APIs.
 
 ## 🚀 Live Demo
-https://skysensewx-o56ggqyj.manus.space
+https://srishtijayara.github.io/SkySense/
 
 ## ✨ Features
 
