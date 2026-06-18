@@ -831,12 +831,34 @@ function handleSearch() {
   const q = searchInput.value.trim();
   if (!q) return;
   hideSuggestions();
+  
+  // Check if input is coordinates (e.g., "28.61, 77.20" or "28.61 77.20")
+  const coordPattern = /^(-?\d+\.?\d*)[,\s]+(-?\d+\.?\d*)$/;
+  const match = q.match(coordPattern);
+  
+  if (match) {
+    const lat = parseFloat(match[1]);
+    const lon = parseFloat(match[2]);
+    
+    // Validate coordinates
+    if (lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180) {
+      reverseGeocode(lat, lon).then(geo => {
+        loadWeather(lat, lon, geo.name, geo.country);
+      }).catch(() => {
+        loadWeather(lat, lon, `${lat.toFixed(4)}, ${lon.toFixed(4)}`, '');
+      });
+      return;
+    }
+  }
+  
+  // Otherwise, search by city name
   fetchGeo(q).then(results => {
     if (!results.length) { showStatus('City not found. Try a different name.', true); return; }
     const r = results[0];
     loadWeather(r.latitude, r.longitude, r.name, [r.admin1, r.country].filter(Boolean).join(', '));
   }).catch(() => showStatus('Search failed. Check your connection.', true));
 }
+
 
 function handleAutocomplete(query) {
   if (!query || query.length < 2) { hideSuggestions(); return; }
